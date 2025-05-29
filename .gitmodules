@@ -1,0 +1,6 @@
+[submodule "rsa-rust"]
+	path = rsa-rust
+	url = https://github.com/your-user/rsa-rust.git
+[submodule "rust-chat"]
+	path = rust-chat
+	url = https://github.com/your-user/rust-chat
