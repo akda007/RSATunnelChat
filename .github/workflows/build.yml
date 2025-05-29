@@ -1,0 +1,51 @@
+name: Build Tauri App
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install frontend dependencies
+        working-directory: rust-chat
+        run: npm install
+
+      - name: Build Tauri app
+        working-directory: rust-chat
+        run: npx tauri build
+
+      - name: Upload MSI (WiX bundle)
+        uses: actions/upload-artifact@v3
+        with:
+          name: rust-chat-msi
+          path: rust-chat/src-tauri/target/release/bundle/msi/*.msi
+
+      - name: Upload NSIS installer
+        uses: actions/upload-artifact@v3
+        with:
+          name: rust-chat-nsis
+          path: rust-chat/src-tauri/target/release/bundle/nsis/*.exe
